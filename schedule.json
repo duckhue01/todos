@@ -1,34 +1,17 @@
-		// colorBlue := "\033[34m"
-		// colorCyan := "\033[36m"
-		
-		// colorReset := "\033[0m"
-		// colorRed := "\033[31m"
-		// colorGreen := "\033[32m"
-		// colorYellow := "\033[33m"
-		// colorPurple := "\033[35m"
-		// colorWhite := "\033[37m"
 
 
 {
-  "project": {
+  "proj": {
     "ts": {
       "des":"tlu student",
-      "color":""
+      "color":"\\033[34m"
     },
-    "to": "todo list"
-  },
-  "foundation": {
-    "dt/al": "data structure and algorithms"
-  },
-  "technology":{
-    "go": "go language"
-  },
-  "practice": {
-    "hr":"hacker rank"
-  },
-  "homework": {
-    "ex": "exercise"
+    "to":{
+      "des":"todo list",
+      "color":"\\033[3m"
+    }
   }
+
   
 }
 

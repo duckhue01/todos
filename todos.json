@@ -1,16 +1,17 @@
 {
-  "25-10-2021":[
-     {
+  "date": "25-10-2021",
+  "todos":[
+    {
       "des":["put something in here"],
       "isDone":false,
-      "tag":"al"
-      
+      "tag":"al",
+      "id":2
     },
     {
       "des":["complete hashing table"],
       "isDone":true,
-      "tag":"en"
-      
+      "tag":"en",
+      "id":1
     }
   ]
 }
