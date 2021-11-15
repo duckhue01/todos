@@ -3,15 +3,19 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
 	"io/ioutil"
+	"log"
+
+	"path/filepath"
+
+	"github.com/spf13/cobra"
 )
 
 type Task struct {
 	Des    []string
 	IsDone bool
 	Tag    string
-	Id int
+	Id     int
 }
 type Seed struct {
 	Des     string
@@ -20,14 +24,14 @@ type Seed struct {
 
 var todos map[string][]Task
 var schedule map[string]Seed
-
+var base = "/home/duckhue01/coding-data/pro/todos/"
 func init() {
 	rootCmd.AddCommand(listCmd)
-
-	todosRaw, err1 := ioutil.ReadFile("todos.json")
-	scheduleRaw, err2 := ioutil.ReadFile("schedule.json")
+	todosRaw, err1 := ioutil.ReadFile(filepath.Join(base, "todos.json"))
+	scheduleRaw, err2 := ioutil.ReadFile(filepath.Join(base, "schedule.json"))
 	if err1 != nil && err2 != nil {
-		panic("some thing went wrong !!!")
+		log.Fatal("can not read file todos and schedule")
+		log.Fatal(err1, err2)
 	}
 
 	json.Unmarshal(todosRaw, &todos)
@@ -55,19 +59,17 @@ var listCmd = &cobra.Command{
 
 func taskHandler() {
 
-	// fmt.Println(schedule)
-	for i := 0; i < len(todos["25-10-2021"]); i++ {
+	// for i := 0; i < len(todos["25-10-2021"]); i++ {
 
-		fmt.Printf("#%s: ", todos["25-10-2021"][i].Tag)
+	// 	fmt.Printf("#%s: ", todos["25-10-2021"][i].Tag)
 
-		for a := 0; a < len(todos["25-10-2021"][i].Des); a++ {
-			fmt.Println(todos["25-10-2021"][i].Des[a])
+	// 	for a := 0; a < len(todos["25-10-2021"][i].Des); a++ {
+	// 		fmt.Println(todos["25-10-2021"][i].Des[a])
 
-		}
+	// 	}
 
-	}
-
-	// fmt.Println(todos)
+	// }
+	fmt.Println("sdasd")
 
 }
 
