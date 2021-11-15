@@ -20,15 +20,23 @@ var zoomCmd = &cobra.Command{
 
 				username, _ := cmd.Flags().GetString("username")
 				password, _ := cmd.Flags().GetString("password")
-				services.StartZoomhandler(username, password)
+				auto, _ := cmd.Flags().GetBool("auto")
+				services.StartZoomhandler(username, password, auto)
 			case args[0] == "update":
 				user, _ := cmd.Flags().GetString("username")
 				pass, _ := cmd.Flags().GetString("password")
 				services.UpdateZoomHandler(user, pass)
+			case args[0] == "check":
+				code, _ := cmd.Flags().GetString("code")
+				if code != "" {
+					services.CheckRoomHandler(code)
+				}
+
+				services.CheckTodayHandler()
 			}
 
 		} else {
-			fmt.Println("st happened")
+			fmt.Println("enter what you want to do")
 		}
 	},
 }
@@ -37,4 +45,6 @@ func init() {
 	rootCmd.AddCommand(zoomCmd)
 	zoomCmd.Flags().StringP("username", "u", "", "user name of fucking tlu account")
 	zoomCmd.Flags().StringP("password", "p", "", "password")
+	zoomCmd.Flags().BoolP("auto", "a", false, "auto mode")
+	zoomCmd.Flags().StringP("code", "c", "", "check room code")
 }

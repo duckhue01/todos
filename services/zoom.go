@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	tm "github.com/buger/goterm"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -46,7 +47,10 @@ type Data struct {
 }
 
 func UpdateZoomHandler(user, pass string) {
-	token := auth(user, pass)
+	token, err := auth(user, pass)
+	if err != nil {
+		log.Fatal("can not authentication")
+	}
 	body := getData(token)
 	data := tranform(body)
 	d, err := json.Marshal(data)
@@ -60,7 +64,7 @@ func UpdateZoomHandler(user, pass string) {
 	}
 }
 
-func auth(user, pass string) string {
+func auth(user, pass string) (string, error) {
 
 	res, err := http.PostForm("http://sinhvien.tlu.edu.vn:8099/education/oauth/token", url.Values{"username": {user}, "password": {pass}, "client_id": {"education_client"},
 		"grant_type": {"password"}, "client_secret": {"password"},
@@ -71,12 +75,16 @@ func auth(user, pass string) string {
 	defer res.Body.Close()
 	raw, _ := ioutil.ReadAll(res.Body)
 
-	type Body struct {
-		Token string `json:"access_token"`
+	if res.StatusCode == 200 {
+		type Body struct {
+			Token string `json:"access_token"`
+		}
+		var body Body
+		json.Unmarshal(raw, &body)
+		return fmt.Sprintf("Bearer %s", body.Token), nil
 	}
-	var body Body
-	json.Unmarshal(raw, &body)
-	return fmt.Sprintf("Bearer %s", body.Token)
+	return "", err
+
 }
 
 func getData(token string) []Body {
@@ -127,7 +135,7 @@ func tranform(body []Body) [6][]Data {
 	return data
 }
 
-func StartZoomhandler(username, password string) {
+func StartZoomhandler(username string, password string, auto bool) {
 
 	raw, err := ioutil.ReadFile(filepath.Join(base, "zoomData.json"))
 	if err != nil {
@@ -148,13 +156,30 @@ func StartZoomhandler(username, password string) {
 
 		// determine outdated subject
 		if (data[weekIndex][i].EndDate - now.UnixMilli()) > 0 {
-			now := time.Now().UnixMilli() % 86400000
 			start := data[weekIndex][i].StartHour % 86400000
 			end := data[weekIndex][i].EndHour % 86400000
-
-			if now > start && now < end {
-				result = data[weekIndex][i]
-				isHave = true
+			i := 1
+			tm.Clear()
+			if auto {
+				for {
+					now := time.Now().UnixMilli() % 86400000
+					if now > start && now < end {
+						result = data[weekIndex][i]
+						isHave = true
+						break
+					}
+					tm.MoveCursor(1, 1)
+					tm.Print("waiting for next class...")
+					tm.Flush() // Call it every time at the end of rendering
+					time.Sleep(time.Second)
+				}
+			} else {
+				now := time.Now().UnixMilli() % 86400000
+				if now > start && now < end {
+					result = data[weekIndex][i]
+					isHave = true
+					break
+				}
 			}
 
 		}
@@ -177,9 +202,8 @@ func StartZoomhandler(username, password string) {
 		url := fmt.Sprintf("zoommtg://zoom.us/join?action=join&confno=%s&pwd=%s&zc=0&uname=%s", id, username, password)
 		open(url)
 	} else {
-		fmt.Println("gio deo co tiet nao ca thu update xem")
+		fmt.Println("you haven't had class yet!!")
 	}
-
 }
 
 func open(url string) {
@@ -197,6 +221,48 @@ func open(url string) {
 	}
 	if err != nil {
 		log.Fatal(err)
+	}
+
+}
+
+func CheckRoomHandler(code string) {
+	raw, err := ioutil.ReadFile(filepath.Join(base, "zoomID.json"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	var ID map[string]string
+
+	err = json.Unmarshal(raw, &ID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(ID[code])
+}
+
+func CheckTodayHandler() {
+	raw, err := ioutil.ReadFile(filepath.Join(base, "zoomData.json"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	var data [][]Data
+
+	err = json.Unmarshal(raw, &data)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	weekIndex := int(time.Now().Weekday())
+	now := time.Now()
+
+	for i := 0; i < len(data[weekIndex]); i++ {
+
+		// determine outdated subject
+		if (data[weekIndex][i].EndDate - now.UnixMilli()) > 0 {
+			tm.Clear()
+			fmt.Println(data[weekIndex][i].SubjectName, "-", data[weekIndex][i].Room)
+		}
+
 	}
 
 }

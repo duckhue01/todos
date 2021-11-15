@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path/filepath"
 	"time"
 
@@ -49,8 +50,25 @@ func StarPomotHandler(isMusic bool) {
 	}
 }
 
-func SetPomoHandler() {
-	fmt.Println("set is called")
+func SetPomoHandler(key string, value int) {
+	json.Unmarshal(setRaw, &set)
+	switch key {
+	case "pomo":
+		set.Pomo = value
+	case "short":
+		set.Short = value
+	case "long":
+		set.Long = value
+	case "interval":
+		set.Interval = value
+
+	}
+	raw, _ := json.Marshal(set)
+
+	err := ioutil.WriteFile(filepath.Join(base, "pomo.json"), raw, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func clock(start string, state string, round int) {

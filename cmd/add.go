@@ -15,13 +15,3 @@ var addCmd = &cobra.Command{
 
 	},
 }
-
-// colorBlue := "\033[34m"
-// colorCyan := "\033[36m"
-
-// colorReset := "\033[0m"
-// colorRed := "\033[31m"
-// colorGreen := "\033[32m"
-// colorYellow := "\033[33m"
-// colorPurple := "\033[35m"
-// colorWhite := "\033[37m"

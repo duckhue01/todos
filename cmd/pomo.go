@@ -1,4 +1,3 @@
-
 package cmd
 
 import (
@@ -28,7 +27,11 @@ var pomoCmd = &cobra.Command{
 			case args[0] == "start":
 				services.StarPomotHandler(isMusic)
 			case args[0] == "set":
-				services.SetPomoHandler()
+				key, _ := cmd.Flags().GetString("key")
+				value, _ := cmd.Flags().GetInt("value")
+				if key != "" && value > 0 {
+					services.SetPomoHandler(key, value)
+				}
 			}
 
 		} else {
@@ -41,5 +44,7 @@ var pomoCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(pomoCmd)
 	pomoCmd.Flags().BoolP("music", "m", true, "open music or not")
+	pomoCmd.Flags().IntP("value", "v", 0, "value")
+	pomoCmd.Flags().StringP("key", "k", "", "key")
 
 }
