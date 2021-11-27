@@ -4,6 +4,8 @@ go 1.17
 
 require (
 	github.com/buger/goterm v1.0.3
+	github.com/hajimehoshi/go-mp3 v0.3.2
+	github.com/hajimehoshi/oto v1.0.1
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.9.0
 )
@@ -20,6 +22,9 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6 // indirect
+	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
+	golang.org/x/mobile v0.0.0-20190719004257-d2bd2a29d028 // indirect
 	golang.org/x/sys v0.0.0-20211113001501-0c823b97ae02 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.64.0 // indirect

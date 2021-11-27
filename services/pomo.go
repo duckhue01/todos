@@ -9,6 +9,7 @@ import (
 	"time"
 
 	tm "github.com/buger/goterm"
+	"github.com/duckhue01/todos/utils"
 )
 
 type Set struct {
@@ -27,11 +28,9 @@ func StarPomotHandler(isMusic bool) {
 	var inst string
 	start := time.Now().Format(time.RFC1123)
 	round := 1
-
 	if isMusic {
-		music()
+		go utils.RunMP3("musics/1.mp3")
 	}
-
 	for {
 		tm.Clear()
 		state = "focus"
@@ -61,7 +60,6 @@ func SetPomoHandler(key string, value int) {
 		set.Long = value
 	case "interval":
 		set.Interval = value
-
 	}
 	raw, _ := json.Marshal(set)
 
@@ -111,9 +109,5 @@ func clock(start string, state string, round int) {
 			time.Sleep(time.Second)
 		}
 	}
-
-}
-
-func music() {
 
 }

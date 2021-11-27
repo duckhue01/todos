@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-
 	"github.com/duckhue01/todos/services"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +16,6 @@ var zoomCmd = &cobra.Command{
 		if len(args) > 0 {
 			switch {
 			case args[0] == "start":
-
 				username, _ := cmd.Flags().GetString("username")
 				password, _ := cmd.Flags().GetString("password")
 				auto, _ := cmd.Flags().GetBool("auto")
@@ -31,7 +29,6 @@ var zoomCmd = &cobra.Command{
 				if code != "" {
 					services.CheckRoomHandler(code)
 				}
-
 				services.CheckTodayHandler()
 			}
 
