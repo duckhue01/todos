@@ -19,6 +19,7 @@ import (
 	"github.com/duckhue01/todos/cmd"
 )
 
+var Base = "/home/duckhue01/coding-data/pro/todos/"
 func main() {
 	cmd.Execute()
 }

@@ -24,13 +24,12 @@ type Seed struct {
 
 var todos map[string][]Task
 var schedule map[string]Seed
-var base = "/home/duckhue01/coding-data/pro/todos/"
+var base = "/home/duckhue01/code/pro/todos/"
 func init() {
 	rootCmd.AddCommand(listCmd)
 	todosRaw, err1 := ioutil.ReadFile(filepath.Join(base, "todos.json"))
 	scheduleRaw, err2 := ioutil.ReadFile(filepath.Join(base, "schedule.json"))
 	if err1 != nil && err2 != nil {
-		log.Fatal("can not read file todos and schedule")
 		log.Fatal(err1, err2)
 	}
 
