@@ -22,6 +22,7 @@ func RunMP3(path string)  {
 	if err != nil {
 		log.Fatal(err) 
 	}
+	
 	defer c.Close()
 	p := c.NewPlayer()
 	defer p.Close()

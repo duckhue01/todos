@@ -46,5 +46,4 @@ func init() {
 	pomoCmd.Flags().BoolP("music", "m", true, "open music or not")
 	pomoCmd.Flags().IntP("value", "v", 0, "value")
 	pomoCmd.Flags().StringP("key", "k", "", "key")
-
 }

@@ -1,14 +1,16 @@
 package services
 
 import (
-	"math/rand"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"path"
 	"path/filepath"
+	"strconv"
 	"time"
+
 	tm "github.com/buger/goterm"
 	"github.com/duckhue01/todos/utils"
 )
@@ -33,16 +35,28 @@ func StarPomotHandler(isMusic bool) {
 		go func() {
 			for {
 				rand.Seed(time.Now().UnixNano())
-				utils.RunMP3(path.Join(base, fmt.Sprintf("musics/%d.mp3", rand.Intn(2))))	
+				utils.RunMP3(path.Join(base, fmt.Sprintf("musics/%d.mp3", rand.Intn(8))))
 			}
 		}()
 	}
 	for {
+		quit := make(chan bool)
 		tm.Clear()
 		state = "focus"
 		clock(start, state, round)
 		fmt.Println("press enter to continuos...")
+		go func() {
+			select {
+			case <-quit:
+				return
+			default:
+				for {
+					utils.RunMP3(path.Join(base, "alarm.mp3"))
+				}
+			}
+		}()
 		fmt.Scanln(&inst)
+		quit <- true
 		if round%set.Interval == 0 {
 			state = "long break"
 		}
@@ -77,16 +91,26 @@ func SetPomoHandler(key string, value int) {
 
 func clock(start string, state string, round int) {
 
+	timeF := func(m, s int) string {
+		mf, sf := strconv.Itoa(m), strconv.Itoa(s)
+		if m < 10 {
+			mf = "0" + mf
+		}
+		if s < 10 {
+			sf = "0" + sf
+		}
+
+		return fmt.Sprintf("%s:%s", mf, sf)
+	}
+
 	if state == "focus" {
 		for i := 0; i <= (set.Pomo * 60); i++ {
-			minute := (i / 60) % 60
-			second := i % 60
+			m := (i / 60) % 60
+			s := i % 60
 			tm.MoveCursor(1, 5)
 			tm.Println(tm.Color("===============================================", tm.RED))
 			tm.Println("start time: ", start)
-			fTime := fmt.Sprintf("%d:%d", minute, second)
-			tm.Println("\n", (tm.Color(fTime, tm.RED)), "\n")
-
+			tm.Println("\n", (tm.Color(timeF(m, s), tm.RED)), "\n")
 			tm.Println("round:", round, "- state:", tm.Color(state, tm.RED))
 			tm.Println(tm.Color("===============================================", tm.RED))
 			tm.Flush() // Call it every time at the end of rendering
@@ -103,7 +127,7 @@ func clock(start string, state string, round int) {
 		for i := 0; i <= bTime; i++ {
 			minute := (i / 60) % 60
 			second := i % 60
-			tm.MoveCursor(1, 10)
+			tm.MoveCursor(1, 5)
 			tm.Println(tm.Color("===============================================", tm.GREEN))
 			tm.Println("start time: ", start)
 			fTime := fmt.Sprintf("%d:%d", minute, second)
