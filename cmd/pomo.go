@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/duckhue01/todos/services"
+	"github.com/duckhue01/todos/view"
 	"github.com/spf13/cobra"
 )
 
@@ -32,6 +34,8 @@ var pomoCmd = &cobra.Command{
 				if key != "" && value > 0 {
 					services.SetPomoHandler(key, value)
 				}
+			case args[0] == "test":
+				view.Start()
 			}
 
 		} else {
@@ -44,6 +48,4 @@ var pomoCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(pomoCmd)
 	pomoCmd.Flags().BoolP("music", "m", true, "open music or not")
-	pomoCmd.Flags().IntP("value", "v", 0, "value")
-	pomoCmd.Flags().StringP("key", "k", "", "key")
 }

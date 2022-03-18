@@ -24,7 +24,7 @@ type Seed struct {
 
 var todos map[string][]Task
 var schedule map[string]Seed
-var base = "/home/duckhue01/code/pro/todos/"
+var base = "/Users/duckhue01/code/side/todos"
 func init() {
 	rootCmd.AddCommand(listCmd)
 	todosRaw, err1 := ioutil.ReadFile(filepath.Join(base, "todos.json"))

@@ -22,6 +22,9 @@ type Set struct {
 	Interval int
 }
 
+var base = "/Users/duckhue01/code/side/todos"
+
+
 var set Set
 var setRaw, _ = ioutil.ReadFile(filepath.Join(base, "pomo.json"))
 
