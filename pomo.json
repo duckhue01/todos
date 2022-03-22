@@ -1,1 +1,5 @@
-{"Pomo":45,"Short":10,"Long":15,"Interval":3}
+{
+    "pomo": 45,
+    "break": 10,
+    "interval": 3
+}

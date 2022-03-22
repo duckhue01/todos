@@ -2,18 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/duckhue01/todos/services"
-	"github.com/duckhue01/todos/view"
 	"github.com/spf13/cobra"
 )
-
-type Set struct {
-	Pomo     int
-	Short    int
-	Long     int
-	Interval int
-}
 
 // pomoCmd represents the pomo command
 var pomoCmd = &cobra.Command{
@@ -21,25 +14,25 @@ var pomoCmd = &cobra.Command{
 	Short: "pomodoro",
 	Long:  `pomodoro`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		isMusic, _ := cmd.Flags().GetBool("music")
-
+		needMusic, _ := cmd.Flags().GetBool("music")
+		pomoService := services.NewPomo("/Users/duckhue01/code/side/todos")
 		if len(args) > 0 {
 			switch {
 			case args[0] == "start":
-				services.StarPomotHandler(isMusic)
+				pomoService.StartPomoHanddler(needMusic)
 			case args[0] == "set":
 				key, _ := cmd.Flags().GetString("key")
 				value, _ := cmd.Flags().GetInt("value")
 				if key != "" && value > 0 {
-					services.SetPomoHandler(key, value)
+					pomoService.SetPomoHandler(key, time.Duration(value))
 				}
+			case args[0] == "info":
+				pomoService.InfoPomoHandler()
 			case args[0] == "test":
-				view.Start()
 			}
 
 		} else {
-			fmt.Println("st happened")
+			fmt.Println("operation is required. please use [start/set]")
 		}
 
 	},

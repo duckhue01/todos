@@ -11,7 +11,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(dailyCmd)
-	dailyCmd.Flags().StringP("date", "d", utils.TimeToString(time.Now()), "get todos with specific date. example: 10-10-2021")
+	dailyCmd.Flags().StringP("date", "d", utils.DateToString(time.Now()), "get todos with specific date. example: 10-10-2021")
 
 }
 

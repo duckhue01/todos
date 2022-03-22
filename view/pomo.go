@@ -18,6 +18,10 @@ import (
 const listHeight = 10
 
 var (
+	red   = lipgloss.NewStyle().Foreground(lipgloss.Color("#6b0504"))
+	green = lipgloss.NewStyle().Foreground(lipgloss.Color("#47a025"))
+	gray  = lipgloss.NewStyle().Foreground(lipgloss.Color("#f2e7c9"))
+
 	// list styles
 	titleStyle        = lipgloss.NewStyle().MarginLeft(2).Foreground(lipgloss.Color("200"))
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
@@ -30,8 +34,9 @@ var (
 	quitTextStyle   = lipgloss.NewStyle().Margin(1, 0, 2, 4)
 
 	timerContainerStyle = lipgloss.NewStyle().Width(30).Height(10)
-	timerStyle          = lipgloss.NewStyle().Width(20).Align(lipgloss.Center).Border(lipgloss.NormalBorder())
-	listStyle           = lipgloss.NewStyle().Height(10).Align(lipgloss.Center)
+
+	timerStyle = lipgloss.NewStyle().Width(20).Align(lipgloss.Center).Border(lipgloss.NormalBorder())
+	listStyle  = lipgloss.NewStyle().Height(10).Align(lipgloss.Center)
 )
 
 type Item models.Todo
@@ -74,27 +79,49 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 }
 
 type model struct {
-	list     list.Model
-	timer    timer.Model
-	choice   Item
-	quitting bool
-	keymap   keymap
-	help     help.Model
+	list        list.Model
+	timer       timer.Model
+	choice      Item
+	quitting    bool
+	help        help.Model
+	state       string
+	pomoConfig  models.PomoConfig
+	round       int
+	start       string
+	timerKeymap timerKeymap
 }
 
-type keymap struct {
+type timerKeymap struct {
 	start key.Binding
 	stop  key.Binding
 	reset key.Binding
-	quit  key.Binding
 }
 
-func NewModel(l list.Model, t timer.Model) model {
+func NewModel(l list.Model, t timer.Model, pomoConfig models.PomoConfig, state string, startTime string) model {
 	return model{
-		list:     l,
-		choice:   Item{},
-		quitting: false,
-		timer:    t,
+		list:       l,
+		timer:      t,
+		choice:     Item{},
+		quitting:   false,
+		help:       help.Model{},
+		state:      state,
+		pomoConfig: pomoConfig,
+		round:      1,
+		start:      startTime,
+		timerKeymap: timerKeymap{
+			start: key.NewBinding(
+				key.WithKeys("s"),
+				key.WithHelp("s", "start"),
+			),
+			stop: key.NewBinding(
+				key.WithKeys("s"),
+				key.WithHelp("s", "stop"),
+			),
+			reset: key.NewBinding(
+				key.WithKeys("r"),
+				key.WithHelp("r", "reset"),
+			),
+		},
 	}
 }
 
@@ -120,13 +147,28 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case timer.StartStopMsg:
 		var cmd tea.Cmd
 		m.timer, cmd = m.timer.Update(msg)
-		m.keymap.stop.SetEnabled(m.timer.Running())
-		m.keymap.start.SetEnabled(!m.timer.Running())
+		m.timerKeymap.stop.SetEnabled(m.timer.Running())
+		m.timerKeymap.start.SetEnabled(!m.timer.Running())
 		return m, cmd
 
 	case timer.TimeoutMsg:
-		m.quitting = true
-		return m, tea.Quit
+		if m.state == "focus" && m.round < m.pomoConfig.Interval {
+			m.state = "break"
+			m.timer = timer.New(m.pomoConfig.Break)
+			return m, nil
+		}
+
+		if m.state == "break" && m.round < m.pomoConfig.Interval {
+			m.state = "focus"
+			m.round++
+			m.timer = timer.New(m.pomoConfig.Pomo)
+			return m, nil
+		}
+
+		if m.round == m.pomoConfig.Interval {
+			m.quitting = true
+			return m, tea.Quit
+		}
 
 	// tea key msg
 	case tea.KeyMsg:
@@ -142,7 +184,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		}
-
 	}
 
 	var cmd tea.Cmd
@@ -154,27 +195,38 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 
 	if m.quitting {
-		return quitTextStyle.Render("you have had a good day")
+		return quitTextStyle.Render("well done!!!")
 	}
 
-	timerView := timerStyle.Render(m.timer.View())
+	var timerContainerView string
+	var listView string
 
-	timerContainerView := timerContainerStyle.Render(fmt.Sprintf("start time: 1\n%v\nstate: focus - round: 1 ", timerView))
-	listView := listStyle.Render(m.list.View())
+	startTime := gray.Render(fmt.Sprintf("start time: %v", m.start))
+
+	listView = listStyle.Render(m.list.View())
+
+	if m.state == "focus" {
+		timerView := timerStyle.Render(red.Render(m.timer.View()))
+		timerContainerView = timerContainerStyle.Render(fmt.Sprintf("%v\n%v\nstate: %v - round: %v ", startTime, timerView, red.Render(m.state), red.Render(fmt.Sprint(m.round))))
+
+	} else {
+		timerView := timerStyle.Render(green.Render(m.timer.View()))
+		timerContainerView = timerContainerStyle.Render(fmt.Sprintf("%v\n%v\nstate: %v - round: %v ", startTime, timerView, green.Render(m.state), green.Render(fmt.Sprint(m.round))))
+
+	}
 
 	return lipgloss.JoinHorizontal(0, timerContainerView, listView)
 }
 
 func (m model) helpView() string {
 	return "\n" + m.help.ShortHelpView([]key.Binding{
-		m.keymap.start,
-		m.keymap.stop,
-		m.keymap.reset,
-		m.keymap.quit,
+		m.timerKeymap.start,
+		m.timerKeymap.stop,
+		m.timerKeymap.reset,
 	})
 }
 
-func Start() {
+func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 	items := []list.Item{
 		Item{
 			Title:  "this is some thing that different",
@@ -200,54 +252,6 @@ func Start() {
 			IsDone: false,
 			Id:     1,
 		},
-		Item{
-			Title:  "learn a bit english",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		},
-		Item{
-			Title:  "asdasd",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		},
-
-		Item{
-			Title:  "this is some thing that different",
-			Tag:    "asdasd",
-			IsDone: false,
-			Id:     1,
-		},
-		Item{
-			Title:  "learn a bit english",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		},
-		Item{
-			Title:  "asdasd",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		}, Item{
-			Title:  "this is some thing that different",
-			Tag:    "asdasd",
-			IsDone: false,
-			Id:     1,
-		},
-		Item{
-			Title:  "learn a bit english",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		},
-		Item{
-			Title:  "asdasd",
-			Tag:    "asdasd",
-			IsDone: true,
-			Id:     1,
-		},
 	}
 
 	const defaultWidth = 20
@@ -262,9 +266,9 @@ func Start() {
 	l.Styles.HelpStyle = helpStyle
 
 	// new timer model
-	s := timer.New(10 * time.Minute)
+	s := timer.New(time.Duration(pomoConfig.Pomo) * time.Minute)
 
-	if err := tea.NewProgram(NewModel(l, s)).Start(); err != nil {
+	if err := tea.NewProgram(NewModel(l, s, pomoConfig, state, startTime)).Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
 	}

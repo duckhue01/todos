@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TimeToString(time time.Time) string {
+func DateToString(time time.Time) string {
 	day := time.Day()
 	mon := time.Month()
 	year := time.Year()
