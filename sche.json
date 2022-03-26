@@ -1,0 +1,31 @@
+[
+  {
+    "startDate": "25-03-2022",
+    "endDate": "25-6-2022",
+    "tasks": {
+      "proj": [
+        "todos",
+        "srt"
+      ],
+      "book": [
+        "ds",
+        "linux",
+        "pg"
+      ],
+      "tech": [
+        "docker",
+        "kubernetes",
+        "redis",
+        "rabbitmq",
+        "jwt",
+        "grpc",
+        "microservice pattern"
+      ],
+      "other": [
+        "watching devops and sw arch video",
+        "learn test driven development",
+        "familiar with srt project"
+      ]
+    }
+  }
+]

@@ -23,11 +23,11 @@ var (
 	gray  = lipgloss.NewStyle().Foreground(lipgloss.Color("#f2e7c9"))
 
 	// list styles
-	titleStyle        = lipgloss.NewStyle().MarginLeft(2).Foreground(lipgloss.Color("200"))
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(2)
-	doneStyle         = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("100"))
-	unDoneStyle       = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("30"))
+	titleStyle    = lipgloss.NewStyle().MarginLeft(2).Foreground(lipgloss.Color("200"))
+	itemStyle     = lipgloss.NewStyle().PaddingLeft(2)
+	doneStyle     = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#47a025"))
+	unDoneStyle   = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#6b0504"))
+	selectedStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#f2e7c9"))
 
 	paginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(2)
 	helpStyle       = list.DefaultStyles().HelpStyle.PaddingLeft(2).PaddingBottom(1)
@@ -54,22 +54,30 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%d. %s", index+1, i.Title)
+	str := i.Title
 
 	fn := itemStyle.Render
 
 	if index == m.Index() {
-		fn = func(s string) string {
-			return selectedItemStyle.Render("> " + s)
-		}
-	} else {
+
 		if !i.IsDone {
 			fn = func(s string) string {
-				return unDoneStyle.Render(s)
+				return selectedStyle.Render("[ ]" + s)
 			}
 		} else {
 			fn = func(s string) string {
-				return doneStyle.Render(s)
+				return selectedStyle.Render("[x]" + s)
+			}
+		}
+
+	} else {
+		if !i.IsDone {
+			fn = func(s string) string {
+				return unDoneStyle.Render("[ ]" + s)
+			}
+		} else {
+			fn = func(s string) string {
+				return doneStyle.Render("[x]" + s)
 			}
 		}
 
@@ -154,15 +162,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case timer.TimeoutMsg:
 		if m.state == "focus" && m.round < m.pomoConfig.Interval {
 			m.state = "break"
-			m.timer = timer.New(m.pomoConfig.Break)
-			return m, nil
+			m.timer = timer.New(m.pomoConfig.Break * time.Second)
+			cmd := m.timer.Start()
+			return m, cmd
 		}
 
 		if m.state == "break" && m.round < m.pomoConfig.Interval {
 			m.state = "focus"
 			m.round++
-			m.timer = timer.New(m.pomoConfig.Pomo)
-			return m, nil
+			m.timer = timer.New(m.pomoConfig.Pomo * time.Second)
+			cmd := m.timer.Start()
+			return m, cmd
 		}
 
 		if m.round == m.pomoConfig.Interval {
@@ -195,13 +205,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 
 	if m.quitting {
-		return quitTextStyle.Render("well done!!!")
+		return quitTextStyle.Render("Well done!!!")
 	}
 
 	var timerContainerView string
 	var listView string
 
-	startTime := gray.Render(fmt.Sprintf("start time: %v", m.start))
+	startTime := gray.Render(fmt.Sprintf("Start time: %v", m.start))
 
 	listView = listStyle.Render(m.list.View())
 
@@ -231,7 +241,7 @@ func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 		Item{
 			Title:  "this is some thing that different",
 			Tag:    "asdasd",
-			IsDone: false,
+			IsDone: true,
 			Id:     1,
 		},
 		Item{
@@ -243,7 +253,7 @@ func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 		Item{
 			Title:  "asdasd",
 			Tag:    "asdasd",
-			IsDone: true,
+			IsDone: false,
 			Id:     1,
 		},
 		Item{
@@ -258,7 +268,7 @@ func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 
 	// new list model
 	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = "My today tasks:"
+	l.Title = gray.Render("My today tasks:")
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
 	l.Styles.Title = titleStyle
@@ -266,7 +276,7 @@ func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 	l.Styles.HelpStyle = helpStyle
 
 	// new timer model
-	s := timer.New(time.Duration(pomoConfig.Pomo) * time.Minute)
+	s := timer.New(pomoConfig.Pomo * time.Second)
 
 	if err := tea.NewProgram(NewModel(l, s, pomoConfig, state, startTime)).Start(); err != nil {
 		fmt.Println("Error running program:", err)
