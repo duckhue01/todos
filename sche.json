@@ -4,13 +4,13 @@
     "endDate": "25-6-2022",
     "tasks": {
       "proj": [
-        "todos",
-        "srt"
+        "todos"
       ],
       "book": [
-        "ds",
-        "linux",
-        "pg"
+        "car",
+        "os",
+        "dk",
+        "ds"
       ],
       "tech": [
         "docker",

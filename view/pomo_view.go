@@ -18,16 +18,16 @@ import (
 const listHeight = 10
 
 var (
-	red   = lipgloss.NewStyle().Foreground(lipgloss.Color("#6b0504"))
-	green = lipgloss.NewStyle().Foreground(lipgloss.Color("#47a025"))
+	red   = lipgloss.NewStyle().Foreground(lipgloss.Color("#d30d0d"))
+	green = lipgloss.NewStyle().Foreground(lipgloss.Color("#27a300"))
 	gray  = lipgloss.NewStyle().Foreground(lipgloss.Color("#f2e7c9"))
 
 	// list styles
 	titleStyle    = lipgloss.NewStyle().MarginLeft(2).Foreground(lipgloss.Color("200"))
 	itemStyle     = lipgloss.NewStyle().PaddingLeft(2)
-	doneStyle     = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#47a025"))
-	unDoneStyle   = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#6b0504"))
-	selectedStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#f2e7c9"))
+	doneStyle     = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#27a300"))
+	unDoneStyle   = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("#d30d0d"))
+	selectedStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.Color("#ffdd00"))
 
 	paginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(2)
 	helpStyle       = list.DefaultStyles().HelpStyle.PaddingLeft(2).PaddingBottom(1)
@@ -193,6 +193,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.choice = i
 			}
 			return m, nil
+
+		case "s":
+			return m, m.timer.Toggle()
 		}
 	}
 
@@ -276,7 +279,7 @@ func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
 	l.Styles.HelpStyle = helpStyle
 
 	// new timer model
-	s := timer.New(pomoConfig.Pomo * time.Second)
+	s := timer.New(pomoConfig.Pomo * time.Minute)
 
 	if err := tea.NewProgram(NewModel(l, s, pomoConfig, state, startTime)).Start(); err != nil {
 		fmt.Println("Error running program:", err)

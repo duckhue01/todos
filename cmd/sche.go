@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/duckhue01/todos/view"
+	"github.com/duckhue01/todos/services"
 	"github.com/spf13/cobra"
 )
 
@@ -15,11 +15,10 @@ var listCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Long:  `All software has versions. This is Hugo's`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// scheService := services.NewScheService("/Users/duckhue01/code/side/todos")
+		scheService := services.NewScheService("/Users/duckhue01/code/side/todos")
 		switch {
 		case args[0] == "list":
-			// scheService.GetSche()
-			view.StartSche()
+			scheService.ListSche()
 		}
 
 	},
