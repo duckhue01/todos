@@ -16,7 +16,15 @@ func TestNewPomoDB(t *testing.T) {
 		args args
 		want *PomoDB
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test case #1: want to receive new  PomoDB struct",
+			args: args{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/daily.json",
+			},
+			want: &PomoDB{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/daily.json",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -36,7 +44,58 @@ func TestPomoDB_GetTodayTask(t *testing.T) {
 		fields fields
 		want   []models.Todo
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test case #1: want to receive correct today task",
+			fields: fields{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/daily.json",
+			},
+			want: []models.Todo{
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     1,
+				},
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     2,
+				},
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     3,
+				},
+			},
+		},
+		{
+			name: "test case #1: invalid path, want to ",
+			fields: fields{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/daily.json",
+			},
+			want: []models.Todo{
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     1,
+				},
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     2,
+				},
+				{
+					Title:  "title",
+					Tag:    "des",
+					IsDone: false,
+					Id:     3,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

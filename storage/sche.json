@@ -1,0 +1,33 @@
+{
+  "frontend": [
+    "react v",
+    "react-native v"
+  ],
+  "backend": [
+    "golang =",
+    "nodejs"
+  ],
+  "db": [
+    "postgres",
+    "mysql",
+    "redis"
+  ],
+  "devops": [
+    "docker",
+    "kubernetes"
+  ],
+  "arch": [
+    "microservice",
+    "monolithic",
+    "event driven architecture",
+    "domain driven architecture"
+  ],
+  "fund": [
+    "os =",
+    "net",
+    "algo",
+    "ds",
+    "ca",
+    "se ="
+  ]
+}

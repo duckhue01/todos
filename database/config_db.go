@@ -14,18 +14,17 @@ type ConfigDB struct {
 
 func NewConfigDB(path string) *ConfigDB {
 	return &ConfigDB{path: path}
-
 }
 
 func (con *ConfigDB) GetPomoConfig() *models.PomoConfig {
-	var pomoConfig *models.PomoConfig
+	pomoConfig := &models.PomoConfig{}
 	var setRaw, err = ioutil.ReadFile(con.path)
 	if err != nil {
 		fmt.Println(fmt.Errorf("%v", err))
+		return nil
 	}
 
 	json.Unmarshal(setRaw, pomoConfig)
-
+	fmt.Println(pomoConfig)
 	return pomoConfig
-
 }

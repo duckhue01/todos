@@ -16,7 +16,13 @@ func TestNewConfigDB(t *testing.T) {
 		args args
 		want *ConfigDB
 	}{
-		// TODO: Add test cases.
+		{
+			"test case #1: want to receive ConfigDB struct",
+			args{path: "/Users/duckhue01/code/side/todos/storage/_test/config/pomo.json"},
+			&ConfigDB{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/config/pomo.json",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -36,7 +42,24 @@ func TestConfigDB_GetPomoConfig(t *testing.T) {
 		fields fields
 		want   *models.PomoConfig
 	}{
-		// TODO: Add test cases.
+		{
+			name: "test case #1: want to receive correct config struct",
+			fields: fields{
+				path: "/Users/duckhue01/code/side/todos/storage/_test/config/pomo.json",
+			},
+			want: &models.PomoConfig{
+				Pomo:     10,
+				Break:    20,
+				Interval: 30,
+			},
+		},
+		{
+			name: "test case #1: wrong storage path, want to receive error",
+			fields: fields{
+				path: "wrong/path/pomo.json",
+			},
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

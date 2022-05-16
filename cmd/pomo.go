@@ -15,7 +15,7 @@ var pomoCmd = &cobra.Command{
 	Long:  `pomodoro`,
 	Run: func(cmd *cobra.Command, args []string) {
 		needMusic, _ := cmd.Flags().GetBool("music")
-		pomoService := services.NewPomo("/Users/duckhue01/code/side/todos")
+		pomoService := services.NewPomo("/Users/duckhue01/code/side/todos/storage")
 		if len(args) > 0 {
 			switch {
 			case args[0] == "start":
