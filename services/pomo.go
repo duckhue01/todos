@@ -10,31 +10,29 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/duckhue01/todos/db"
 	"github.com/duckhue01/todos/models"
 	"github.com/duckhue01/todos/utils"
 	"github.com/duckhue01/todos/view"
 )
 
 type Pomo struct {
-	base string
+	db db.DB
 }
 
-func NewPomo(base string) *Pomo {
+func NewPomo(db db.DB) *Pomo {
 	return &Pomo{
-		base: base,
+		db: db,
 	}
 }
 
-func (pomo *Pomo) StartPomoHanddler(needMusic bool) {
-	var pomoConfig models.PomoConfig
-	var setRaw, pomoConfigErr = ioutil.ReadFile(filepath.Join(pomo.base, "pomo.json"))
-	if pomoConfigErr != nil {
-		fmt.Println("can't read pomo config file")
+func (pomo *Pomo) StartPomo(needMusic bool) {
+
+	pomoConfig, err := pomo.db.GetPomoConfig()
+	if err != nil {
+
 	}
-
-	json.Unmarshal(setRaw, &pomoConfig)
-
-	startTime := time.Now().Format(time. Kitchen)
+	startTime := time.Now().Format(time.Kitchen)
 	if needMusic {
 		go func() {
 			for {
@@ -48,7 +46,7 @@ func (pomo *Pomo) StartPomoHanddler(needMusic bool) {
 
 }
 
-func (pomo *Pomo) SetPomoHandler(key string, value time.Duration) {
+func (pomo *Pomo) SetPomo(key string, value time.Duration) {
 	var pomoConfig models.PomoConfig
 	var setRaw, pomoConfigErr = ioutil.ReadFile(filepath.Join(pomo.base, "pomo.json"))
 	if pomoConfigErr != nil {
@@ -72,6 +70,6 @@ func (pomo *Pomo) SetPomoHandler(key string, value time.Duration) {
 	}
 }
 
-func (pomo *Pomo) InfoPomoHandler() {
+func (pomo *Pomo) InfoPomo() {
 
 }
