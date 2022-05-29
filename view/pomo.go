@@ -93,7 +93,7 @@ type model struct {
 	quitting    bool
 	help        help.Model
 	state       string
-	pomoConfig  models.PomoConfig
+	pomoConfig  *models.PomoConfig
 	round       int
 	start       string
 	timerKeymap timerKeymap
@@ -105,7 +105,7 @@ type timerKeymap struct {
 	reset key.Binding
 }
 
-func NewModel(l list.Model, t timer.Model, pomoConfig models.PomoConfig, state string, startTime string) model {
+func NewModel(l list.Model, t timer.Model, pomoConfig *models.PomoConfig, state string, startTime string) model {
 	return model{
 		list:       l,
 		timer:      t,
@@ -239,7 +239,7 @@ func (m model) helpView() string {
 	})
 }
 
-func StartPomo(pomoConfig models.PomoConfig, state string, startTime string) {
+func StartPomo(pomoConfig *models.PomoConfig, state string, startTime string) {
 	items := []list.Item{
 		Item{
 			Title:  "this is some thing that different",

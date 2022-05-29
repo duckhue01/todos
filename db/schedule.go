@@ -26,7 +26,7 @@ func (db *jsonDB) ListSchedule() (*[]models.Schedule, error) {
 
 }
 
-func (db *jsonDB) GetCurrentSchedule() (*models.Schedule, error) {
+func (db *jsonDB) ReadCurrentSchedule() (*models.Schedule, error) {
 	res := &models.Schedule{}
 
 	bytes, err := ioutil.ReadFile(filepath.Join(db.path, "schedule.json"))

@@ -8,7 +8,7 @@ import (
 	"github.com/duckhue01/todos/models"
 )
 
-func (db *jsonDB) GetPomoConfig() (*models.PomoConfig, error) {
+func (db *jsonDB) ReadPomoConfig() (*models.PomoConfig, error) {
 	pomoConfig := &models.PomoConfig{}
 	var setRaw, err = ioutil.ReadFile(filepath.Join(db.path, "pomo.json"))
 	if err != nil {
@@ -21,4 +21,12 @@ func (db *jsonDB) GetPomoConfig() (*models.PomoConfig, error) {
 	}
 
 	return pomoConfig, nil
+}
+
+func (db *jsonDB) WritePomoConfig(data []byte) error {
+	err := ioutil.WriteFile(filepath.Join(db.path, "pomo.json"), data, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }

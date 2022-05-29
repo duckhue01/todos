@@ -8,8 +8,14 @@ type (
 	}
 	DB interface {
 		ListSchedule() (*[]models.Schedule, error)
-		GetCurrentSchedule() (*models.Schedule, error)
-		GetPomoConfig() (*models.PomoConfig, error)
+		ReadCurrentSchedule() (*models.Schedule, error)
+
+		ReadPomoConfig() (*models.PomoConfig, error)
+		WritePomoConfig([]byte) error
+
+		ReadMedievalMusic() string
+		ReadEpicMusic() string
+		ReadPianoMusic() string
 	}
 )
 

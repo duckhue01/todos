@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/duckhue01/todos/db"
 	"github.com/duckhue01/todos/services"
 	"github.com/spf13/cobra"
 )
@@ -15,19 +16,20 @@ var pomoCmd = &cobra.Command{
 	Long:  `pomodoro`,
 	Run: func(cmd *cobra.Command, args []string) {
 		needMusic, _ := cmd.Flags().GetBool("music")
-		pomoService := services.NewPomo("/Users/duckhue01/code/side/todos/storage")
+		// todo: need to replace placeholder
+		pomoService := services.NewPomo(db.New("some-path"))
 		if len(args) > 0 {
 			switch {
 			case args[0] == "start":
-				pomoService.StartPomoHanddler(needMusic)
+				pomoService.StartPomo(needMusic)
 			case args[0] == "set":
 				key, _ := cmd.Flags().GetString("key")
 				value, _ := cmd.Flags().GetInt("value")
 				if key != "" && value > 0 {
-					pomoService.SetPomoHandler(key, time.Duration(value))
+					pomoService.SetPomo(key, time.Duration(value))
 				}
 			case args[0] == "info":
-				pomoService.InfoPomoHandler()
+				pomoService.InfoPomo()
 			case args[0] == "test":
 			}
 

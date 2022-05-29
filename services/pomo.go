@@ -2,17 +2,9 @@ package services
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"math/rand"
-	"path"
-	"path/filepath"
 	"time"
 
 	"github.com/duckhue01/todos/db"
-	"github.com/duckhue01/todos/models"
-	"github.com/duckhue01/todos/utils"
 	"github.com/duckhue01/todos/view"
 )
 
@@ -27,8 +19,7 @@ func NewPomo(db db.DB) *Pomo {
 }
 
 func (pomo *Pomo) StartPomo(needMusic bool) {
-
-	pomoConfig, err := pomo.db.GetPomoConfig()
+	pomoConfig, err := pomo.db.ReadPomoConfig()
 	if err != nil {
 
 	}
@@ -36,8 +27,7 @@ func (pomo *Pomo) StartPomo(needMusic bool) {
 	if needMusic {
 		go func() {
 			for {
-				rand.Seed(time.Now().UnixNano())
-				utils.RunMP3(path.Join(pomo.base, fmt.Sprintf("musics/%d.mp3", rand.Intn(8))))
+				RunMP3(pomo.db.ReadEpicMusic())
 			}
 		}()
 	}
@@ -47,13 +37,11 @@ func (pomo *Pomo) StartPomo(needMusic bool) {
 }
 
 func (pomo *Pomo) SetPomo(key string, value time.Duration) {
-	var pomoConfig models.PomoConfig
-	var setRaw, pomoConfigErr = ioutil.ReadFile(filepath.Join(pomo.base, "pomo.json"))
-	if pomoConfigErr != nil {
-		fmt.Println("can't read pomo config file")
+	pomoConfig, err := pomo.db.ReadPomoConfig()
+	if err != nil {
+
 	}
 
-	json.Unmarshal(setRaw, &pomoConfig)
 	switch key {
 	case "pomo":
 		pomoConfig.Pomo = value
@@ -62,12 +50,16 @@ func (pomo *Pomo) SetPomo(key string, value time.Duration) {
 	case "interval":
 		pomoConfig.Interval = int(value)
 	}
-	raw, _ := json.Marshal(pomoConfig)
-
-	err := ioutil.WriteFile(filepath.Join(pomo.base, "pomo.json"), raw, 0644)
+	raw, err := json.Marshal(pomoConfig)
 	if err != nil {
-		log.Fatal(err)
+
 	}
+
+	err = pomo.db.WritePomoConfig(raw)
+	if err != nil {
+
+	}
+
 }
 
 func (pomo *Pomo) InfoPomo() {

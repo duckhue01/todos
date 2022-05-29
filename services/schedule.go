@@ -18,6 +18,6 @@ func (s *Schedule) ListSchedule() (*[]models.Schedule, error) {
 }
 
 func (s *Schedule) GetCurrentSchedule() (*models.Schedule, error) {
-	return s.db.GetCurrentSchedule()
+	return s.db.ReadCurrentSchedule()
 
 }
