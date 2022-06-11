@@ -1,4 +1,4 @@
-package models
+package model
 
 import "time"
 
@@ -7,4 +7,3 @@ type PomoConfig struct {
 	Break    time.Duration `json:"break"`
 	Interval int           `json:"interval"`
 }
-

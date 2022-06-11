@@ -1,21 +1,19 @@
 package db
 
-import "github.com/duckhue01/todos/models"
+import "github.com/duckhue01/todos/model"
 
 type (
 	jsonDB struct {
 		path string
 	}
 	DB interface {
-		ListSchedule() (*[]models.Schedule, error)
-		ReadCurrentSchedule() (*models.Schedule, error)
-
-		ReadPomoConfig() (*models.PomoConfig, error)
+		ReadPomoConfig() (*model.PomoConfig, error)
 		WritePomoConfig([]byte) error
 
 		ReadMedievalMusic() string
 		ReadEpicMusic() string
 		ReadPianoMusic() string
+		ReadChillMusic() string
 	}
 )
 

@@ -21,3 +21,8 @@ func (db *jsonDB) ReadPianoMusic() string {
 	rand.Seed(time.Now().UnixNano())
 	return path.Join(db.path, fmt.Sprintf("musics/piano/%d.mp3", rand.Intn(8)))
 }
+
+func (db *jsonDB) ReadChillMusic() string {
+	rand.Seed(time.Now().UnixNano())
+	return path.Join(db.path, fmt.Sprintf("musics/chill/%d.mp3", rand.Intn(8)))
+}

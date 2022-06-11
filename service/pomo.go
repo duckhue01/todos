@@ -1,7 +1,8 @@
-package services
+package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/duckhue01/todos/db"
@@ -21,13 +22,13 @@ func NewPomo(db db.DB) *Pomo {
 func (pomo *Pomo) StartPomo(needMusic bool) {
 	pomoConfig, err := pomo.db.ReadPomoConfig()
 	if err != nil {
-
+		fmt.Println(fmt.Errorf("fail to read pomo config: %w", err))
 	}
 	startTime := time.Now().Format(time.Kitchen)
 	if needMusic {
 		go func() {
 			for {
-				RunMP3(pomo.db.ReadEpicMusic())
+				RunMP3(pomo.db.ReadChillMusic())
 			}
 		}()
 	}
@@ -39,7 +40,7 @@ func (pomo *Pomo) StartPomo(needMusic bool) {
 func (pomo *Pomo) SetPomo(key string, value time.Duration) {
 	pomoConfig, err := pomo.db.ReadPomoConfig()
 	if err != nil {
-
+		fmt.Println(fmt.Errorf("fail to read pomo config: %w", err))
 	}
 
 	switch key {
@@ -50,18 +51,26 @@ func (pomo *Pomo) SetPomo(key string, value time.Duration) {
 	case "interval":
 		pomoConfig.Interval = int(value)
 	}
+
 	raw, err := json.Marshal(pomoConfig)
 	if err != nil {
-
+		fmt.Println(fmt.Errorf("fail to marshal pomo config: %w", err))
 	}
 
 	err = pomo.db.WritePomoConfig(raw)
 	if err != nil {
-
+		fmt.Println(fmt.Errorf("fail to write pomo config: %w", err))
 	}
+
+	fmt.Printf("%+v", pomoConfig)
 
 }
 
 func (pomo *Pomo) InfoPomo() {
+	pomoConfig, err := pomo.db.ReadPomoConfig()
+	if err != nil {
+		fmt.Println(fmt.Errorf("fail to read pomo config: %w", err))
+	}
+	fmt.Printf("%+v", pomoConfig)
 
 }

@@ -1,10 +1,11 @@
-
 package cmd
 
 import (
 	"fmt"
 	"os"
 
+	"github.com/duckhue01/todos/db"
+	"github.com/duckhue01/todos/service"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -12,12 +13,11 @@ import (
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "todos",
-	Short: "todos",
-	Long: `todos`,
+	Use:   "start",
+	Short: "start",
+	Long:  `start`,
 	Run: func(cmd *cobra.Command, args []string) {
-
-		fmt.Println("this is todos")
+		service.NewPomo(db.New("./db")).StartPomo(true)
 
 	},
 }
